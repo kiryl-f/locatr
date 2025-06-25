@@ -1,13 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolvers = void 0;
-const fs_1 = require("fs");
-const path_1 = __importDefault(require("path"));
-const images = JSON.parse((0, fs_1.readFileSync)(path_1.default.join(__dirname, 'data', 'images.json'), 'utf-8'));
-exports.resolvers = {
+import { readFileSync } from 'fs';
+import path from 'path';
+const images = JSON.parse(readFileSync(path.join(__dirname, 'data', 'images.json'), 'utf-8'));
+export const resolvers = {
     Query: {
         images: (_, { region, country, count }) => {
             let filtered = images;

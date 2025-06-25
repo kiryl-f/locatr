@@ -1,24 +1,13 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 
-type Image = {
-  id: string;
-  lat: number;
-  lng: number;
-  country?: string;
-  region?: string;
-};
-
-const images: Image[] = JSON.parse(
-  readFileSync(path.join(__dirname, 'data', 'images.json'), 'utf-8')
+const images = JSON.parse(
+  readFileSync(path.join(process.cwd(), 'src/data', 'images.json'), 'utf-8')
 );
 
 export const resolvers = {
   Query: {
-    images: (
-      _: any,
-      { region, country, count }: { region?: string; country?: string; count: number }
-    ) => {
+    images: (_, { region, country, count }) => {
       let filtered = images;
 
       if (region) {
@@ -32,7 +21,7 @@ export const resolvers = {
       return shuffled.slice(0, count);
     },
 
-    randomImage: (_: any, { region }: { region?: string }) => {
+    randomImage: (_, { region }) => {
       const filtered = region
         ? images.filter(img => img.region === region)
         : images;
