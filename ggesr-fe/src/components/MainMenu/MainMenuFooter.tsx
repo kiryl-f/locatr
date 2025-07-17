@@ -1,0 +1,9 @@
+import styles from "./MainMenu.module.scss";
+
+export default function MainMenuFooter() {
+  return (
+    <footer className={styles.footer}>
+      Built with ❤️ | <a href="https://github.com/kiryl-f/ggesr">GitHub</a>
+    </footer>
+  );
+} 
