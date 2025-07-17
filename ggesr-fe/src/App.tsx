@@ -1,9 +1,14 @@
-import { Game } from './components/Game/Game';
+import { Routes, Route } from "react-router-dom";
+import { Game } from "./pages/Game/Game";
+import Main from "./pages/Main/Main";
+import NotFound from "./pages/NotFound/NotFound";
 
-function App() {
+export default function App() {
   return (
-    <Game/>
-  )
+    <Routes>
+      <Route path="/" element={<Main />} />
+      <Route path="/game" element={<Game />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
-
-export default App;

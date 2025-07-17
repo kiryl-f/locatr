@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
-import { StreetView } from '../StreetView/StreetView';
-import { GuessMap } from '../GuessMap/GuessMap';
+import { StreetView } from '../../components/StreetView/StreetView';
+import { GuessMap } from '../../components/GuessMap/GuessMap';
 import { haversineDistance } from '../../utils/distance';
+import { RegionPicker } from '../../components/RegionPicker/RegionPicker';
 
 import styles from './Game.module.scss';
 
@@ -20,12 +21,13 @@ const GET_RANDOM_IMAGE = gql`
 `;
 
 export const Game = () => {
+  const [region, setRegion] = useState<'europe' | 'usa'>('europe');
   const [guessCoords, setGuessCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
 
   // Fetch one random image from backend (you can pass region or omit)
   const { loading, error, data, refetch } = useQuery(GET_RANDOM_IMAGE, {
-    variables: { region: 'europe' }, // You can make this dynamic or remove region
+    variables: { region },
     fetchPolicy: 'network-only', // Always fetch fresh data on mount/refetch
   });
 
@@ -52,12 +54,21 @@ export const Game = () => {
     refetch(); // Fetch a new random image for next round
   };
 
+  const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newRegion = e.target.value as 'europe' | 'usa';
+    setRegion(newRegion);
+    setGuessCoords(null);
+    setDistance(null);
+    refetch({ region: newRegion });
+  };
+
   if (loading) return <p className={styles.centeredMessage}>Loading location...</p>;
   if (error || !data?.randomImage)
     return <p className={styles.centeredMessage}>Error loading image</p>;
 
   return (
     <div>
+      <RegionPicker region={region} onChange={handleRegionChange} />
       <StreetView imageKey={data.randomImage.id} />
       <div className={styles.guessMapContainer}>
         <GuessMap onGuess={handleGuess} />
