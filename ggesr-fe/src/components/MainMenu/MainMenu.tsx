@@ -9,7 +9,7 @@ import MainMenuFooter from "./MainMenuFooter";
 
 export default function MainMenu() {
   const navigate = useNavigate();
-  const [region, setRegion] = React.useState("world");
+  const [region, setRegion] = React.useState("europe");
   const [mode, setMode] = React.useState("classic");
 
   const handleStart = () => {

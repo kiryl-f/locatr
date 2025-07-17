@@ -12,9 +12,7 @@ export default function RegionModeSelector({ region, setRegion, mode, setMode }:
     <div className={styles.selectorGroup}>
       <label>🌐 Region</label>
       <select value={region} onChange={(e) => setRegion(e.target.value)}>
-        <option value="world">World</option>
         <option value="europe">Europe</option>
-        <option value="asia">Asia</option>
         <option value="usa">USA</option>
       </select>
 
@@ -22,7 +20,6 @@ export default function RegionModeSelector({ region, setRegion, mode, setMode }:
       <select value={mode} onChange={(e) => setMode(e.target.value)}>
         <option value="classic">Classic</option>
         <option value="timed">Timed</option>
-        <option value="daily">Daily</option>
       </select>
     </div>
   );

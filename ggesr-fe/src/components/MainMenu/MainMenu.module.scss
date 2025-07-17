@@ -1,34 +1,37 @@
+@import '../../styles/colors';
+
 .container {
     min-height: 100vh;
-    background-color: black;
-    color: #00ff00;
+    background-color: $color-bg;
+    color: $color-primary;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    width: 40dvw;
   }
   
   .title {
     font-size: 3rem;
-    color: #ffff00;
-    text-shadow: 0 0 5px rgba(255, 255, 0, 0.75);
+    color: $color-tertiary;
+    text-shadow: 0 0 5px $color-tertiary;
     margin-bottom: 2rem;
   }
   
   .menuBox {
-    background: #111;
-    border: 3px solid #ff00ff;
+    background: $color-surface;
+    border: 3px solid $color-secondary;
     padding: 2rem;
     width: 100%;
     max-width: 400px;
-    box-shadow: 0 0 15px #ff00ff;
+    box-shadow: 0 0 15px $color-secondary;
   }
   
   .startButton {
-    background: #ff69b4;
-    color: white;
-    border: 4px solid #ff00ff;
+    background: $color-secondary;
+    color: $color-text;
+    border: 4px solid $color-secondary;
     padding: 1rem;
     font-size: 1.2rem;
     width: 100%;
@@ -36,7 +39,7 @@
     cursor: pointer;
   
     &:hover {
-      background: #ff1493;
+      background: $color-primary;
     }
   }
   
@@ -46,9 +49,9 @@
     gap: 0.5rem;
   
     select {
-      background: black;
-      color: #00ff00;
-      border: 1px solid #00ff00;
+      background: $color-bg;
+      color: $color-primary;
+      border: 1px solid $color-primary;
       padding: 0.5rem;
       font-family: inherit;
     }
@@ -62,7 +65,7 @@
     button {
       font-size: 0.75rem;
       background: none;
-      color: #00ff00;
+      color: $color-primary;
       border: none;
       cursor: pointer;
   
@@ -75,10 +78,10 @@
   .footer {
     margin-top: 2rem;
     font-size: 0.75rem;
-    color: #009900;
+    color: $color-muted;
   
     a {
-      color: #00ff00;
+      color: $color-primary;
       text-decoration: underline;
     }
   }

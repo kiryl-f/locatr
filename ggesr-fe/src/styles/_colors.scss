@@ -1,0 +1,15 @@
+// Retro Arcade Color Palette
+$color-bg: #0D0D0D;              // App background
+$color-surface: #1A1A1A;         // Panels, cards, menus
+$color-primary: #00FFF7;         // Neon cyan (buttons, accents)
+$color-secondary: #FF2D95;       // Hot pink (hover, emphasis)
+$color-tertiary: #FFD700;        // Electric yellow (optional accent)
+
+$color-text: #FFFFFF;            // Primary text
+$color-muted: #CCCCCC;           // Secondary text
+$color-error: #FF5555;           // Alerts, errors
+
+.neon-glow {
+  text-shadow: 0 0 5px $color-primary, 0 0 10px $color-primary, 0 0 20px $color-primary;
+  color: $color-primary;
+} 
