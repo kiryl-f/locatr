@@ -1,4 +1,5 @@
-@import '../../styles/colors';
+@use '../../styles/colors' as *;
+
 .mapContainer {
     width: 100%;
     height: 100%;

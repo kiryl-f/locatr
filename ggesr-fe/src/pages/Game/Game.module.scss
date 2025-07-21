@@ -1,4 +1,4 @@
-@import '../../styles/colors';
+@use '../../styles/colors' as *;
 
 .streetView {
     width: calc(100% - 150px);

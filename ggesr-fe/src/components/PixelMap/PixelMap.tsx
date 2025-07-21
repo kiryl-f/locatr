@@ -2,11 +2,11 @@ import styles from './PixelMap.module.scss';
 import { useEffect, useState } from 'react';
 
 const REGIONS = [
-    { name: 'Europe', x: 220, y: 100 },
-    { name: 'Asia', x: 340, y: 100 },
-    { name: 'Africa', x: 250, y: 180 },
-    { name: 'Americas', x: 100, y: 120 },
-    { name: 'Oceania', x: 460, y: 200 },
+    { name: 'Europe', x: 320, y: 290 },
+    { name: 'Asia', x: 350, y: 190 },
+    { name: 'Africa', x: 350, y: 350 },
+    { name: 'Americas', x: 100, y: 400 },
+    { name: 'Oceania', x: 560, y: 300 },
 ];
 
 export default function PixelMap() {

@@ -15,8 +15,8 @@ export const RegionPicker: React.FC<RegionPickerProps> = ({ region, onChange }) 
       onChange={onChange}
       className={styles.select}
     >
-      <option value="europe">Europe</option>
-      <option value="usa">USA</option>
+      <option className={styles.select} value="europe">Europe</option>
+      <option className={styles.select} value="usa">USA</option>
     </select>
   </div>
 ); 
