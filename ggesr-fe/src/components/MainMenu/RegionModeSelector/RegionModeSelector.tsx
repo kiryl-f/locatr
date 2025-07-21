@@ -23,13 +23,13 @@ export default function RegionModeSelector({ region, setRegion, mode, setMode }:
         value={region}
         onChange={setRegion}
         options={regionOptions}
-        label="🌐 Region"
+        label="Region"
       />
       <CustomSelect
         value={mode}
         onChange={setMode}
         options={modeOptions}
-        label="🎮 Mode"
+        label="Mode"
       />
     </div>
   );

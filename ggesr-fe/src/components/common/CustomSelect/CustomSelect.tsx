@@ -17,6 +17,21 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState<number>(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [dropdownOpenClass, setDropdownOpenClass] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setShowDropdown(true);
+      // Add the open class after a tick to trigger the animation
+      requestAnimationFrame(() => setDropdownOpenClass(true));
+    } else if (showDropdown) {
+      setDropdownOpenClass(false);
+      // Wait for animation to finish before unmounting
+      const timeout = setTimeout(() => setShowDropdown(false), 250);
+      return () => clearTimeout(timeout);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (open && highlighted === -1) {
@@ -50,10 +65,22 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
       e.preventDefault();
     } else if (open) {
       if (e.key === 'ArrowDown') {
-        setHighlighted(h => Math.min(options.length - 1, h + 1));
+        setHighlighted(h => {
+          const next = Math.min(options.length - 1, h + 1);
+          if (next !== h && next >= 0 && next < options.length) {
+            onChange(options[next].value);
+          }
+          return next;
+        });
         e.preventDefault();
       } else if (e.key === 'ArrowUp') {
-        setHighlighted(h => Math.max(0, h - 1));
+        setHighlighted(h => {
+          const prev = Math.max(0, h - 1);
+          if (prev !== h && prev >= 0 && prev < options.length) {
+            onChange(options[prev].value);
+          }
+          return prev;
+        });
         e.preventDefault();
       } else if (e.key === 'Enter' && highlighted >= 0) {
         handleSelect(options[highlighted]);
@@ -69,7 +96,7 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
     <div className={styles.customSelectContainer} ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown}>
       {label && <label className={styles.customSelectLabel}>{label}</label>}
       <div
-        className={styles.customSelect}
+        className={styles.customSelect + (showDropdown ? ' ' + styles.customSelectOpen   : '')}
         onClick={() => setOpen(o => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -80,8 +107,13 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
         </span>
         <span className={styles.customSelectArrow}>{open ? '▲' : '▼'}</span>
       </div>
-      {open && (
-        <ul className={styles.customSelectDropdown} role="listbox">
+      {showDropdown && (
+        <ul
+          className={
+            styles.customSelectDropdown + (dropdownOpenClass ? ' ' + styles.open : '')
+          }
+          role="listbox"
+        >
           {options.map((option, idx) => (
             <li
               key={option.value}

@@ -17,9 +17,9 @@
 .customSelect {
   background: $color-bg;
   color: $color-primary;
-  border: 1px solid $color-primary;
+  border: 2px solid $color-secondary;
   border-radius: 4px;
-  padding: 0.5rem 2rem 0.5rem 0.5rem;
+  padding: 0.5rem 2rem 0.5rem 1rem;
   font-family: inherit;
   font-size: 1rem;
   cursor: pointer;
@@ -28,8 +28,15 @@
   justify-content: space-between;
   min-width: 120px;
   position: relative;
-  box-shadow: 0 0 8px $color-secondary;
   user-select: none;
+  overflow: hidden;
+}
+
+.customSelectOpen {
+  @extend .customSelect;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  border-bottom: none;
 }
 
 .customSelectValue {
@@ -38,6 +45,7 @@
 
 .customSelectArrow {
   position: absolute;
+  top: 5px;
   right: 0.75rem;
   pointer-events: none;
   color: $color-secondary;
@@ -46,19 +54,27 @@
 
 .customSelectDropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% - 2px);
   left: 0;
-  width: 100%;
-  background: $color-surface;
+  width: calc(100% - 4px);
+  background: $color-bg;
   border: 2px solid $color-secondary;
   border-radius: 0 0 6px 6px;
-  box-shadow: 0 4px 16px $color-secondary;
   z-index: 10;
   margin-top: 2px;
   padding: 0;
   list-style: none;
-  max-height: 200px;
-  overflow-y: auto;
+  max-height: none;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.customSelectDropdown.open {
+  max-height: none;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
 .customSelectOption {

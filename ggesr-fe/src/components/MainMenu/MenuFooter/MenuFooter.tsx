@@ -8,8 +8,8 @@ type MenuFooterProps = {
 export default function MenuFooter({ onHowToPlay, onHighScores }: MenuFooterProps) {
   return (
     <div className={styles.menuFooter}>
-      <button onClick={onHowToPlay}>📖 How to Play</button>
-      <button onClick={onHighScores}>🏆 High Scores</button>
+      <button onClick={onHowToPlay}>How to Play</button>
+      <button onClick={onHighScores}>High Scores</button>
     </div>
   );
 } 
