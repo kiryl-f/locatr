@@ -7,7 +7,7 @@ type StartGameButtonProps = {
 export default function StartGameButton({ onClick }: StartGameButtonProps) {
   return (
     <button onClick={onClick} className={styles.startButton}>
-      ▶ Start Game
+      Start Game
     </button>
   );
 } 
