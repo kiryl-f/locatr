@@ -1,4 +1,4 @@
-import styles from "./MainMenu.module.scss";
+import styles from "./MainMenuFooter.module.scss";
 
 export default function MainMenuFooter() {
   return (

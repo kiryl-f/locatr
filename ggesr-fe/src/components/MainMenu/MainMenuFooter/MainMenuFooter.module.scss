@@ -1,0 +1,12 @@
+@use '../../../styles/colors' as *;
+
+.footer {
+  margin-top: 2rem;
+  font-size: 0.75rem;
+  color: $color-muted;
+
+  a {
+    color: $color-primary;
+    text-decoration: underline;
+  }
+} 

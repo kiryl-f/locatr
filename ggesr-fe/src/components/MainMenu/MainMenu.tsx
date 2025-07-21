@@ -1,11 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./MainMenu.module.scss";
-import MainMenuTitle from "./MainMenuTitle";
-import StartGameButton from "./StartGameButton";
-import RegionModeSelector from "./RegionModeSelector";
-import MenuFooter from "./MenuFooter";
-import MainMenuFooter from "./MainMenuFooter";
+import MainMenuTitle from "./MainMenuTitle/MainMenuTitle";
+import StartGameButton from "./StartGameButton/StartGameButton";
+import RegionModeSelector from "./RegionModeSelector/RegionModeSelector";
+import MenuFooter from "./MenuFooter/MenuFooter";
+import MainMenuFooter from "./MainMenuFooter/MainMenuFooter";
 
 export default function MainMenu() {
   const navigate = useNavigate();

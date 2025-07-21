@@ -1,0 +1,7 @@
+@use '../../../styles/colors' as *;
+
+.selectorGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+} 

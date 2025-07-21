@@ -1,4 +1,4 @@
-import styles from "./MainMenu.module.scss";
+import styles from "./MenuFooter.module.scss";
 
 type MenuFooterProps = {
   onHowToPlay: () => void;

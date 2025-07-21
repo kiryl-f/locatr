@@ -1,4 +1,4 @@
-import styles from "./MainMenu.module.scss";
+import styles from "./StartGameButton.module.scss";
 
 type StartGameButtonProps = {
   onClick: () => void;

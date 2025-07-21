@@ -1,0 +1,19 @@
+@use '../../../styles/colors' as *;
+
+.menuFooter {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+
+  button {
+    font-size: 0.75rem;
+    background: none;
+    color: $color-primary;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+} 

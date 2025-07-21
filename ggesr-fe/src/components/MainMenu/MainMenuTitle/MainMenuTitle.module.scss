@@ -1,0 +1,8 @@
+@use '../../../styles/colors' as *;
+
+.title {
+  font-size: 3rem;
+  color: $color-tertiary;
+  text-shadow: 0 0 5px $color-tertiary;
+  margin-bottom: 2rem;
+} 

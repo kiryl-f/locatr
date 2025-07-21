@@ -1,0 +1,16 @@
+@use '../../../styles/colors' as *;
+
+.startButton {
+  background: $color-secondary;
+  color: $color-text;
+  border: 4px solid $color-secondary;
+  padding: 1rem;
+  font-size: 1.2rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-primary;
+  }
+} 
