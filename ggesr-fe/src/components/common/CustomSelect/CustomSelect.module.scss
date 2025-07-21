@@ -36,7 +36,7 @@
   @extend .customSelect;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
-  border-bottom: none;
+  border-bottom: 2px solid transparent;
 }
 
 .customSelectValue {
@@ -54,19 +54,17 @@
 
 .customSelectDropdown {
   position: absolute;
-  top: calc(100% - 2px);
+  top: 100%;
   left: 0;
   width: calc(100% - 4px);
   background: $color-bg;
   border: 2px solid $color-secondary;
   border-radius: 0 0 6px 6px;
   z-index: 10;
-  margin-top: 2px;
+  margin-top: 0px;
   padding: 0;
   list-style: none;
-  max-height: none;
   opacity: 1;
-  transform: none;
   pointer-events: auto;
 }
 

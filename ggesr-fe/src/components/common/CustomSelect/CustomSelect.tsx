@@ -17,21 +17,6 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
   const [open, setOpen] = useState(false);
   const [highlighted, setHighlighted] = useState<number>(-1);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [dropdownOpenClass, setDropdownOpenClass] = useState(false);
-
-  useEffect(() => {
-    if (open) {
-      setShowDropdown(true);
-      // Add the open class after a tick to trigger the animation
-      requestAnimationFrame(() => setDropdownOpenClass(true));
-    } else if (showDropdown) {
-      setDropdownOpenClass(false);
-      // Wait for animation to finish before unmounting
-      const timeout = setTimeout(() => setShowDropdown(false), 250);
-      return () => clearTimeout(timeout);
-    }
-  }, [open]);
 
   useEffect(() => {
     if (open && highlighted === -1) {
@@ -96,7 +81,7 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
     <div className={styles.customSelectContainer} ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown}>
       {label && <label className={styles.customSelectLabel}>{label}</label>}
       <div
-        className={styles.customSelect + (showDropdown ? ' ' + styles.customSelectOpen   : '')}
+        className={styles.customSelect + (open ? ' ' + styles.customSelectOpen : '')}
         onClick={() => setOpen(o => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -107,11 +92,9 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
         </span>
         <span className={styles.customSelectArrow}>{open ? '▲' : '▼'}</span>
       </div>
-      {showDropdown && (
+      {open && (
         <ul
-          className={
-            styles.customSelectDropdown + (dropdownOpenClass ? ' ' + styles.open : '')
-          }
+          className={styles.customSelectDropdown + (open ? ' ' + styles.open : '')}
           role="listbox"
         >
           {options.map((option, idx) => (
