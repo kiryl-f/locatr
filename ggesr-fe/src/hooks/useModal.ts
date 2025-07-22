@@ -1,19 +1,18 @@
 import { useCallback } from 'react';
-import type { ModalProps, UseModalReturn } from '../types/modalProps';
 import useModalStore from '../zustand/modalStore';
 
-const useModal = (modalID: string): UseModalReturn => {
-  const { modals, openModal, closeModal } = useModalStore();
+const useModal = (modalID: string) => {
+  const { openModal, closeModal, isModalOpen } = useModalStore();
   
-  const open = useCallback((props?: Omit<ModalProps, 'modalID'>) => {
-    openModal(modalID, props);
+  const open = useCallback(() => {
+    openModal(modalID);
   }, [modalID, openModal]);
   
   const close = useCallback(() => {
     closeModal(modalID);
   }, [modalID, closeModal]);
   
-  const isOpen = modals[modalID]?.isOpen ?? false;
+  const isOpen = isModalOpen(modalID);
   
   return { open, close, isOpen };
 };
