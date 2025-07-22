@@ -1,0 +1,1 @@
+export type AvaliableRegion = 'europe' | 'usa';

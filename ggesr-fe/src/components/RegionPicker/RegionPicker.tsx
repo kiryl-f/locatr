@@ -1,8 +1,9 @@
 import React from 'react';
 import styles from './RegionPicker.module.scss';
+import type { AvaliableRegion } from '../../types/regions';
 
 type RegionPickerProps = {
-  region: 'europe' | 'usa';
+  region: AvaliableRegion;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 };
 

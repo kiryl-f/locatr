@@ -1,5 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useCallback, useRef } from 'react';
 import styles from './CustomSelect.module.scss';
+import { useDropdown } from '../../../hooks/useDropdown';
+import { useHighlightedIndex } from '../../../hooks/useHighlightedIndex';
+import { useKeyboardNavigation } from '../../../hooks/useKeyboardNavigation';
 
 interface Option {
   value: string;
@@ -14,101 +17,80 @@ interface CustomSelectProps {
 }
 
 export default function CustomSelect({ value, onChange, options, label }: CustomSelectProps) {
-  const [open, setOpen] = useState(false);
-  const [highlighted, setHighlighted] = useState<number>(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { isOpen, toggle, close } = useDropdown(containerRef);
+  
+  const { highlightedIndex, setHighlightedIndex } = useHighlightedIndex({
+    isOpen,
+    items: options,
+    value,
+    getItemValue: (option) => option.value
+  });
 
-  useEffect(() => {
-    if (open && highlighted === -1) {
-      const idx = options.findIndex(opt => opt.value === value);
-      setHighlighted(idx);
-    }
-  }, [open, value, options, highlighted]);
+  const handleSelectIndex = useCallback((index: number) => {
+    setHighlightedIndex(index);
+    onChange(options[index].value);
+  }, [onChange, options, setHighlightedIndex]);
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [open]);
+  const handleKeyDown = useKeyboardNavigation({
+    isOpen,
+    itemCount: options.length,
+    highlightedIndex,
+    onSelect: handleSelectIndex,
+    onOpen: toggle,
+    onClose: close
+  });
 
-  function handleSelect(option: Option) {
+  const handleSelect = useCallback((option: Option) => {
     onChange(option.value);
-    setOpen(false);
-  }
+    close();
+  }, [onChange, close]);
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    if (!open && (e.key === 'Enter' || e.key === ' ')) {
-      setOpen(true);
-      e.preventDefault();
-    } else if (open) {
-      if (e.key === 'ArrowDown') {
-        setHighlighted(h => {
-          const next = Math.min(options.length - 1, h + 1);
-          if (next !== h && next >= 0 && next < options.length) {
-            onChange(options[next].value);
-          }
-          return next;
-        });
-        e.preventDefault();
-      } else if (e.key === 'ArrowUp') {
-        setHighlighted(h => {
-          const prev = Math.max(0, h - 1);
-          if (prev !== h && prev >= 0 && prev < options.length) {
-            onChange(options[prev].value);
-          }
-          return prev;
-        });
-        e.preventDefault();
-      } else if (e.key === 'Enter' && highlighted >= 0) {
-        handleSelect(options[highlighted]);
-        e.preventDefault();
-      } else if (e.key === 'Escape') {
-        setOpen(false);
-        e.preventDefault();
-      }
-    }
-  }
+  const selectedOption = options.find(opt => opt.value === value);
 
   return (
-    <div className={styles.customSelectContainer} ref={containerRef} tabIndex={0} onKeyDown={handleKeyDown}>
+    <div 
+      className={styles.customSelectContainer} 
+      ref={containerRef} 
+      tabIndex={0} 
+      onKeyDown={handleKeyDown}
+      role="combobox"
+      aria-expanded={isOpen}
+      aria-haspopup="listbox"
+      aria-label={label || 'Select an option'}
+    >
       {label && <label className={styles.customSelectLabel}>{label}</label>}
+      
       <div
-        className={styles.customSelect + (open ? ' ' + styles.customSelectOpen : '')}
-        onClick={() => setOpen(o => !o)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        tabIndex={0}
+        className={`${styles.customSelect} ${isOpen ? styles.customSelectOpen : ''}`}
+        onClick={toggle}
+        tabIndex={-1}
       >
         <span className={styles.customSelectValue}>
-          {options.find(opt => opt.value === value)?.label || ''}
+          {selectedOption?.label || ''}
         </span>
-        <span className={styles.customSelectArrow}>{open ? '▲' : '▼'}</span>
+        <span className={styles.customSelectArrow}>
+          {isOpen ? '▲' : '▼'}
+        </span>
       </div>
-      {open && (
-        <ul
-          className={styles.customSelectDropdown + (open ? ' ' + styles.open : '')}
-          role="listbox"
-        >
-          {options.map((option, idx) => (
+
+      {isOpen && (
+        <ul className={`${styles.customSelectDropdown} ${isOpen ? styles.open : ''}`} role="listbox">
+          {options.map((option, index) => (
             <li
               key={option.value}
-              className={
-                styles.customSelectOption +
-                (option.value === value ? ' ' + styles.selected : '') +
-                (idx === highlighted ? ' ' + styles.highlighted : '')
-              }
+              className={`
+                ${styles.customSelectOption}
+                ${option.value === value ? styles.selected : ''}
+                ${index === highlightedIndex ? styles.highlighted : ''}
+              `}
               role="option"
               aria-selected={option.value === value}
-              onMouseEnter={() => setHighlighted(idx)}
-              onMouseDown={e => { e.preventDefault(); handleSelect(option); }}
+              onMouseEnter={() => setHighlightedIndex(index)}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleSelect(option);
+              }}
             >
               {option.label}
             </li>
@@ -117,4 +99,4 @@ export default function CustomSelect({ value, onChange, options, label }: Custom
       )}
     </div>
   );
-} 
+}
