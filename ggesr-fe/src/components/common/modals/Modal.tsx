@@ -9,9 +9,7 @@ const Modal = ({
     onClose,
     children,
 }: ModalProps) => {
-    const { isOpen, close } = useModal(modalID);
-
-    if (!isOpen) return null;
+    const { isOpen, close } = useModal(modalID)
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -33,6 +31,8 @@ const Modal = ({
         onClose?.();
         close();
     }
+
+    if (!isOpen) return null;
 
     return (
         <div className={styles.overlay} onClick={handleClose}>
