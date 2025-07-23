@@ -1,43 +1,53 @@
+import React, { useEffect, useState } from 'react';
 import styles from './ResultMessage.module.scss';
-import { useEffect, useState } from 'react';
 
-interface Props {
+type ResultMessageProps = {
   message: string;
   points: number;
-  duration?: number; // in ms
   onFinish: () => void;
-}
+  duration?: number; // in ms, optional
+};
 
-export const ResultMessage = ({ message, points, duration = 2500, onFinish }: Props) => {
-  const [displayedPoints, setDisplayedPoints] = useState(0);
+export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, onFinish, duration }) => {
+  const [animatedPoints, setAnimatedPoints] = useState(0);
 
   useEffect(() => {
-    let current = 0;
-    const steps = points;
-    const intervalTime = steps > 0 ? 2000 / steps : 2000;
+    let interval: NodeJS.Timeout;
+    let timeout: NodeJS.Timeout;
 
-    const interval = setInterval(() => {
-      current += 1;
-      setDisplayedPoints(current);
-      if (current >= points) clearInterval(interval);
-    }, intervalTime);
+    // Animate points incrementally
+    interval = setInterval(() => {
+      setAnimatedPoints((prev) => {
+        if (prev < points) return prev + 1;
+        clearInterval(interval);
+        return points;
+      });
+    }, 20);
 
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-      onFinish();
-    }, duration);
+    // Auto-close only if duration is provided
+    if (duration) {
+      timeout = setTimeout(() => {
+        onFinish();
+      }, duration);
+    }
 
     return () => {
       clearInterval(interval);
-      clearTimeout(timeout);
+      if (timeout) clearTimeout(timeout);
     };
   }, [points, duration, onFinish]);
 
   return (
     <div className={styles.overlay}>
       <div className={styles.messageBox}>
-        <div>{message}</div>
-        <div className={styles.points}>+{displayedPoints} pts</div>
+        <p>{message}</p>
+        <p className={styles.points}>+{animatedPoints} points</p>
+
+        {!duration && (
+          <button className={styles.closeButton} onClick={onFinish}>
+            Continue
+          </button>
+        )}
       </div>
     </div>
   );
