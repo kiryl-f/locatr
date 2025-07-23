@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 import { StreetView } from '../../components/StreetView/StreetView';
 import { GuessMap } from '../../components/GuessMap/GuessMap';
@@ -11,27 +11,19 @@ import { useGameTimer } from '../../hooks/useGameTimer';
 
 import styles from './Game.module.scss';
 import { GameControls } from '../../components/Game/GameControls/GameControls';
+import { GET_RANDOM_IMAGE } from '../../graphql/queries/getRandomImage';
+import type { AvaliableRegion } from '../../types/regions';
+import type { GameMode } from '../../types/gameModes';
 
-const GET_RANDOM_IMAGE = gql`
-  query RandomImage($region: String) {
-    randomImage(region: $region) {
-      id
-      lat
-      lng
-      region
-      country
-    }
-  }
-`;
 
-export const Game = () => {
+export const Game: React.FC = () => {
   const [searchParams] = useSearchParams();
 
-  const initialRegion = (searchParams.get('region') as 'europe' | 'usa') || 'europe';
-  const initialMode = (searchParams.get('mode') as 'classic' | 'timed') || 'classic';
+  const initialRegion = (searchParams.get('region') as AvaliableRegion) || 'europe';
+  const initialMode = (searchParams.get('mode') as GameMode) || 'classic';
 
-  const [region, setRegion] = React.useState<'europe' | 'usa'>(initialRegion);
-  const [mode] = React.useState<'classic' | 'timed'>(initialMode);
+  const [region, setRegion] = useState<AvaliableRegion>(initialRegion);
+  const [mode] = useState<GameMode>(initialMode);
 
   const { loading, error, data, refetch } = useQuery(GET_RANDOM_IMAGE, {
     variables: { region },
@@ -63,7 +55,7 @@ export const Game = () => {
   }, [distance, stop]);
 
   const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newRegion = e.target.value as 'europe' | 'usa';
+    const newRegion = e.target.value as AvaliableRegion;
     setRegion(newRegion);
     handleNext(); // Reset state and refetch
   };

@@ -1,8 +1,10 @@
 import React from 'react';
 
+import styles from './GameControls.module.scss';
+
 type GameControlsProps = {
     guessCoords: { lat: number; lng: number } | null;
-    distance: number | null;
+    distance: number | 111111;
     onSubmit: () => void;
     onNext: () => void;
     showTimer?: boolean;
@@ -13,7 +15,7 @@ export const GameControls: React.FC<GameControlsProps> = ({ guessCoords, distanc
     return (
         <div>
             {showTimer && distance === null && (
-                <div style={{ fontSize: '1.5rem', color: 'red', marginBottom: '1rem' }}>
+                <div className={styles.timer}>
                     ⏰ {timer}s
                 </div>
             )}
@@ -23,7 +25,7 @@ export const GameControls: React.FC<GameControlsProps> = ({ guessCoords, distanc
             </button>
 
             {distance !== null && (
-                <button onClick={onNext} style={{ marginLeft: '1rem' }}>
+                <button onClick={onNext} className={styles.nextImageButton}>
                     Next Image
                 </button>
             )}
