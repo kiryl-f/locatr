@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 
@@ -14,6 +14,7 @@ import { GameControls } from '../../components/Game/GameControls/GameControls';
 import { GET_RANDOM_IMAGE } from '../../graphql/queries/getRandomImage';
 import type { AvaliableRegion } from '../../types/regions';
 import type { GameMode } from '../../types/gameModes';
+import { ResultMessage } from '../../components/common/ResultMessage/ResultMessage';
 
 
 export const Game: React.FC = () => {
@@ -50,7 +51,7 @@ export const Game: React.FC = () => {
     }
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (distance !== null) stop();
   }, [distance, stop]);
 
@@ -82,13 +83,13 @@ export const Game: React.FC = () => {
       </div>
 
       {distance !== null && (
-        <p className={styles.distanceMessage}>
-          {distance === -1 ? (
-            <span>Time's up! No guess submitted.</span>
-          ) : (
-            <span>You were <strong>{distance.toFixed(2)} km</strong> away!</span>
-          )}
-        </p>
+        <ResultMessage
+          message={`You were ${distance.toFixed(1)} km away!`}
+          points={123}
+          onFinish={() => {
+            handleNext();
+          }}
+        />
       )}
     </div>
   );

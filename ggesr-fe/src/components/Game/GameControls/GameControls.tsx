@@ -4,7 +4,7 @@ import styles from './GameControls.module.scss';
 
 type GameControlsProps = {
     guessCoords: { lat: number; lng: number } | null;
-    distance: number | 111111;
+    distance: number | null;
     onSubmit: () => void;
     onNext: () => void;
     showTimer?: boolean;
