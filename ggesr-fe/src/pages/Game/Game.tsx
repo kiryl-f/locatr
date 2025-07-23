@@ -15,6 +15,7 @@ import { GET_RANDOM_IMAGE } from '../../graphql/queries/getRandomImage';
 import type { AvaliableRegion } from '../../types/regions';
 import type { GameMode } from '../../types/gameModes';
 import { ResultMessage } from '../../components/common/ResultMessage/ResultMessage';
+import { calculatePoints } from '../../utils/pointsByDistance';
 
 
 export const Game: React.FC = () => {
@@ -85,7 +86,7 @@ export const Game: React.FC = () => {
       {distance !== null && (
         <ResultMessage
           message={`You were ${distance.toFixed(1)} km away!`}
-          points={123}
+          points={calculatePoints(distance)}
           onFinish={() => {
             handleNext();
           }}

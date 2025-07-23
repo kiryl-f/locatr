@@ -1,0 +1,12 @@
+@use '../../../../styles/colors' as *;
+
+.header {
+    font-size: 24px;
+    margin-bottom: 20px;
+    margin-top: 30px;
+    color: $color-text;
+}
+
+p {
+    font-size: 14px;
+}
