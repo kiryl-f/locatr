@@ -6,9 +6,10 @@ type ResultMessageProps = {
   points: number;
   onFinish: () => void;
   duration?: number;
+  actualLocation?: string; 
 };
 
-export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, onFinish, duration }) => {
+export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, onFinish, duration, actualLocation }) => {
   const [animatedPoints, setAnimatedPoints] = useState(0);
 
   useEffect(() => {
@@ -48,6 +49,13 @@ export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, o
             Continue
           </button>
         )}
+
+        {actualLocation 
+          ?
+            <p>{`Actual location: ${actualLocation}`}</p>
+          : 
+            <p>Loading actual location...</p>
+        }
       </div>
     </div>
   );

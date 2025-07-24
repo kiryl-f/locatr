@@ -12,5 +12,6 @@ export const typeDefs = gql`
   type Query {
     images(region: String, country: String, count: Int = 1): [Image!]!
     randomImage(region: String): Image
+    locationNameByCoords(lat: Float!, lon: Float!): String
   }
 `;

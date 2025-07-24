@@ -11,8 +11,12 @@
     width: 600px;
     height: 300px;
     position: fixed;
-    bottom: 70px;
+    bottom: 80px;
     right: 20px;
+
+    &.timed {
+        bottom: 130px;
+    }
 }
 
 .distanceMessage {

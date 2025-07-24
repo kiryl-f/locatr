@@ -21,6 +21,36 @@ export const resolvers = {
       return shuffled.slice(0, count);
     },
 
+    locationNameByCoords: async (_, { lat, lon }) => {
+      console.log(`Reverse geocoding for: ${lat}, ${lon}`);
+      const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+
+      const fetchWithRetry = async (retries = 3, delayMs = 1000) => {
+        try {
+          const response = await fetch(url);
+
+          if (!response.ok) throw new Error(`Failed to fetch location, status: ${response.status}`);
+
+          const data = await response.json();
+          return data.address.country || 'Unknown location';
+        } catch (err) {
+          if (retries > 0) {
+            console.warn(`Fetch failed, retrying... (${retries} left)`, err.message);
+            await new Promise((r) => setTimeout(r, delayMs));
+            return fetchWithRetry(retries - 1, delayMs * 2); // exponential backoff
+          } else {
+            throw err;
+          }
+        }
+      };
+
+      try {
+        return await fetchWithRetry();
+      } catch (err) {
+        console.error('Reverse geocode failed after retries:', err);
+        return 'Unknown location';
+      }
+    },
     randomImage: (_, { region }) => {
       const filtered = region
         ? images.filter(img => img.region === region)
