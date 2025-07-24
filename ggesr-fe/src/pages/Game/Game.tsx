@@ -16,7 +16,7 @@ import type { AvaliableRegion } from '../../types/regions';
 import type { GameMode } from '../../types/gameModes';
 import { ResultMessage } from '../../components/common/ResultMessage/ResultMessage';
 import { calculatePoints } from '../../utils/pointsByDistance';
-import { LOCATION_BY_COORDS } from '../../graphql/queries/getLocationByCoords';
+import { LOCATION_NAME_BY_COORDS } from '../../graphql/queries/getLocationNameByCoords';
 
 export const Game: React.FC = () => {
   const client = useApolloClient();
@@ -58,7 +58,7 @@ export const Game: React.FC = () => {
     }
   );
 
-  const { data: locationData } = useQuery(LOCATION_BY_COORDS, {
+  const { data: locationData } = useQuery(LOCATION_NAME_BY_COORDS, {
     variables: {
       lat: actualCoords?.lat ?? 0,
       lon: actualCoords?.lng ?? 0,
