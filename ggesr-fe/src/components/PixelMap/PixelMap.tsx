@@ -19,7 +19,7 @@ export default function PixelMap() {
         const newMoveCount = moveCount + 1;
         setMoveCount(newMoveCount);
 
-        if (newMoveCount % 3 === 0) {
+        if (newMoveCount % 4 === 0) {
           const result = FAKE_RESULTS[Math.floor(Math.random() * FAKE_RESULTS.length)];
           setResultText(result.text);
           setResultPoints(result.points);
@@ -48,6 +48,7 @@ export default function PixelMap() {
         <ResultMessage
           message={resultText}
           points={resultPoints}
+          duration={2500}
           onFinish={() => setShowResult(false)}
         />
       )}

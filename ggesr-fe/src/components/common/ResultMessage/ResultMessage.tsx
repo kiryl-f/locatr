@@ -5,7 +5,7 @@ type ResultMessageProps = {
   message: string;
   points: number;
   onFinish: () => void;
-  duration?: number; // in ms, optional
+  duration?: number;
 };
 
 export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, onFinish, duration }) => {
@@ -22,7 +22,7 @@ export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, o
         clearInterval(interval);
         return points;
       });
-    }, 20);
+    }, 10);
 
     // Auto-close only if duration is provided
     if (duration) {
