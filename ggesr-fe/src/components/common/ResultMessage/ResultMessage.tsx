@@ -6,11 +6,11 @@ type ResultMessageProps = {
   points: number;
   onFinish: () => void;
   duration?: number;
-  actualLocation?: string; 
+  actualLocation?: string;
 };
 
 export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, onFinish, duration, actualLocation }) => {
-  const [animatedPoints, setAnimatedPoints] = useState(0);
+  const [animatedPoints, setAnimatedPoints] = useState(points < 80 ? 0 : points - 80);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -44,12 +44,7 @@ export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, o
         <p>{message}</p>
         <p className={styles.points}>+{animatedPoints} points</p>
 
-        {actualLocation 
-          ?
-            <p>{`Actual location: ${actualLocation}`}</p>
-          : 
-            <p>Loading actual location...</p>
-        }
+        {actualLocation && <p>{`Actual location: ${actualLocation}`}</p>}
 
         {!duration && (
           <button className={styles.closeButton} onClick={onFinish}>

@@ -28,7 +28,6 @@ export const Game: React.FC = () => {
   const [region, setRegion] = useState<AvaliableRegion>(initialRegion);
   const [mode] = useState<GameMode>(initialMode);
   const [actualCoords, setActualCoords] = useState<{ lat: number; lng: number } | null>(null);
-  const [shouldFetchLocation, setShouldFetchLocation] = useState(false);
 
   const { loading, error, data, refetch } = useQuery(GET_RANDOM_IMAGE, {
     variables: { region },
@@ -37,8 +36,8 @@ export const Game: React.FC = () => {
 
   useEffect(() => {
     if (data?.randomImage) {
-      setActualCoords({ lat: data.randomImage.lat, lng: data.randomImage.lng });
-      setShouldFetchLocation(false); // reset on new round
+      const coords = { lat: data.randomImage.lat, lng: data.randomImage.lng };
+      setActualCoords(coords);
     }
   }, [data]);
 
@@ -63,27 +62,24 @@ export const Game: React.FC = () => {
       lat: actualCoords?.lat ?? 0,
       lon: actualCoords?.lng ?? 0,
     },
-    skip: !shouldFetchLocation || !actualCoords,
+    skip: !actualCoords,
     fetchPolicy: 'network-only',
   });
 
-  const handleRegionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newRegion = e.target.value as AvaliableRegion;
+
+  const handleRegionChange = (newRegion: AvaliableRegion) => {
     setRegion(newRegion);
     handleNext();
   };
 
+
   const handleGuessSubmit = () => {
     handleSubmit();
     stop();
-    if (actualCoords) {
-      setShouldFetchLocation(true); // trigger reverse geocode query
-    }
   };
 
   const handleNextWithReset = () => {
     handleNext();
-    setShouldFetchLocation(false); // prevent query on next round
     client.cache.evict({ fieldName: 'locationNameByCoords' });
   };
 
@@ -107,7 +103,6 @@ export const Game: React.FC = () => {
           guessCoords={guessCoords}
           distance={distance}
           onSubmit={handleGuessSubmit}
-          onNext={handleNextWithReset}
           showTimer={mode === 'timed'}
           timer={timer}
         />

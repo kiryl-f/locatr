@@ -21,7 +21,7 @@ export const HowToPlayModal: React.FC = () => {
 
                 See how far off you were and earn points!
 
-                Click “Next Image” to play again.
+                Click “Continue” to play again.
 
                 Tip: The closer your guess, the more points you get!
             </p>

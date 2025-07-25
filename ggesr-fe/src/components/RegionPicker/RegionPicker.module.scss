@@ -1,11 +1,16 @@
 @use '../../styles/colors' as *;
 
 .regionPickerContainer {
+  position: absolute;
+  top: 10px;
+  z-index: 1111111;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1rem 0;
   font-family: inherit;
+  margin-left: 4rem;
+  width: 18dvw;
+  background-color: transparent;
 }
 
 .label {
