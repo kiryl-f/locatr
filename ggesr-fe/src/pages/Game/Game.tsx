@@ -97,7 +97,12 @@ export const Game: React.FC = () => {
       <StreetView imageKey={data.randomImage.id} />
 
       <div className={`${styles.guessMapContainer} ${mode === 'timed' ? styles.timed : ''}`}>
-        <GuessMap onGuess={handleGuess} />
+        <GuessMap
+          onGuess={handleGuess}
+          guessCoords={guessCoords}
+          actualCoords={actualCoords}
+          showLine={distance !== null}
+        />
         <GameControls
           guessCoords={guessCoords}
           distance={distance}

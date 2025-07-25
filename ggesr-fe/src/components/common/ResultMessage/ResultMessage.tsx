@@ -44,18 +44,18 @@ export const ResultMessage: React.FC<ResultMessageProps> = ({ message, points, o
         <p>{message}</p>
         <p className={styles.points}>+{animatedPoints} points</p>
 
-        {!duration && (
-          <button className={styles.closeButton} onClick={onFinish}>
-            Continue
-          </button>
-        )}
-
         {actualLocation 
           ?
             <p>{`Actual location: ${actualLocation}`}</p>
           : 
             <p>Loading actual location...</p>
         }
+
+        {!duration && (
+          <button className={styles.closeButton} onClick={onFinish}>
+            Continue
+          </button>
+        )}
       </div>
     </div>
   );

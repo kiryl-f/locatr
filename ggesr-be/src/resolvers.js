@@ -32,7 +32,11 @@ export const resolvers = {
           if (!response.ok) throw new Error(`Failed to fetch location, status: ${response.status}`);
 
           const data = await response.json();
-          return data.address.country || 'Unknown location';
+          return `${data.address.city ||
+            data.address.village ||
+            data.address.state ||
+            data.address.state_district ||
+            data.address.road}, ${data.address.country}` || 'Unknown location';
         } catch (err) {
           if (retries > 0) {
             console.warn(`Fetch failed, retrying... (${retries} left)`, err.message);
