@@ -57,6 +57,18 @@ export const typeDefs = gql`
     createdAt: String!
   }
 
+  type User {
+    id: ID!
+    email: String!
+    username: String!
+    createdAt: String!
+  }
+
+  type AuthPayload {
+    user: User!
+    message: String!
+  }
+
   type Query {
     images(region: String, country: String, count: Int = 1): [Image!]!
     randomImage(region: String): Image
@@ -64,9 +76,15 @@ export const typeDefs = gql`
     gameSession(id: ID!): GameSession
     playerStats: PlayerStats!
     leaderboard(region: String, mode: String, limit: Int = 10): [LeaderboardEntry!]!
+    me: User
   }
 
   type Mutation {
+    register(email: String!, username: String!, password: String!): AuthPayload!
+    login(email: String!, password: String!): AuthPayload!
+    logout: Boolean!
+    refreshToken: Boolean!
+    
     startGame(region: String!, mode: String!): GameSession!
     submitRound(
       sessionId: ID!

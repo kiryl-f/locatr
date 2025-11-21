@@ -7,17 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id              String             @id @default(uuid())
+  email           String             @unique
+  username        String             @unique
+  password        String
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  gameSessions    GameSession[]
+  leaderboardEntries LeaderboardEntry[]
+  refreshTokens   RefreshToken[]
+
+  @@index([email])
+  @@index([username])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
 model GameSession {
   id          String   @id @default(uuid())
+  userId      String?
   region      String
   mode        String
   currentRound Int     @default(1)
   totalScore  Int      @default(0)
   completed   Boolean  @default(false)
   createdAt   DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   rounds      Round[]
   leaderboardEntry LeaderboardEntry?
 
+  @@index([userId])
   @@index([region, mode])
   @@index([createdAt])
 }
@@ -44,13 +74,16 @@ model Round {
 model LeaderboardEntry {
   id        String      @id @default(uuid())
   sessionId String      @unique
+  userId    String?
   username  String
   score     Int
   region    String
   mode      String
   createdAt DateTime    @default(now())
   session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user      User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  @@index([userId])
   @@index([region, mode, score])
   @@index([score])
 }

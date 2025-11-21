@@ -131,6 +131,38 @@
   }
 }
 
+.authenticatedSubmit {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+
+  p {
+    margin: 0;
+    color: #666;
+
+    strong {
+      color: #667eea;
+    }
+  }
+
+  .submitButton {
+    padding: 0.75rem 2rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #5568d3;
+    }
+  }
+}
+
 .usernameInput {
   display: flex;
   gap: 1rem;

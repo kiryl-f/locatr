@@ -1,6 +1,14 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
+import { hashPassword, comparePassword } from './auth/password.js';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  getRefreshTokenExpiry,
+  ACCESS_TOKEN_COOKIE_OPTIONS,
+  REFRESH_TOKEN_COOKIE_OPTIONS,
+} from './auth/jwt.js';
 
 const prisma = new PrismaClient();
 
@@ -10,6 +18,16 @@ const images = JSON.parse(
 
 export const resolvers = {
   Query: {
+    me: async (_, __, { user }) => {
+      if (!user) return null;
+      
+      const dbUser = await prisma.user.findUnique({
+        where: { id: user.userId },
+      });
+      
+      return dbUser;
+    },
+
     images: (_, { region, country, count }) => {
       let filtered = images;
 
@@ -77,9 +95,14 @@ export const resolvers = {
       return session;
     },
 
-    playerStats: async () => {
+    playerStats: async (_, __, { user }) => {
+      const where = { completed: true };
+      if (user) {
+        where.userId = user.userId;
+      }
+      
       const sessions = await prisma.gameSession.findMany({
-        where: { completed: true },
+        where,
         include: { rounds: true }
       });
 
@@ -149,7 +172,154 @@ export const resolvers = {
   },
 
   Mutation: {
-    startGame: async (_, { region, mode }) => {
+    register: async (_, { email, username, password }, { res }) => {
+      // Check if user already exists
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          OR: [{ email }, { username }],
+        },
+      });
+
+      if (existingUser) {
+        throw new Error('User with this email or username already exists');
+      }
+
+      // Hash password
+      const hashedPassword = await hashPassword(password);
+
+      // Create user
+      const user = await prisma.user.create({
+        data: {
+          email,
+          username,
+          password: hashedPassword,
+        },
+      });
+
+      // Generate tokens
+      const accessToken = generateAccessToken(user.id, user.email);
+      const refreshToken = generateRefreshToken();
+
+      // Store refresh token in database
+      await prisma.refreshToken.create({
+        data: {
+          token: refreshToken,
+          userId: user.id,
+          expiresAt: getRefreshTokenExpiry(),
+        },
+      });
+
+      // Set cookies
+      res.cookie('accessToken', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+      res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          createdAt: user.createdAt.toISOString(),
+        },
+        message: 'Registration successful',
+      };
+    },
+
+    login: async (_, { email, password }, { res }) => {
+      // Find user
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new Error('Invalid email or password');
+      }
+
+      // Verify password
+      const isValid = await comparePassword(password, user.password);
+      if (!isValid) {
+        throw new Error('Invalid email or password');
+      }
+
+      // Generate tokens
+      const accessToken = generateAccessToken(user.id, user.email);
+      const refreshToken = generateRefreshToken();
+
+      // Store refresh token in database
+      await prisma.refreshToken.create({
+        data: {
+          token: refreshToken,
+          userId: user.id,
+          expiresAt: getRefreshTokenExpiry(),
+        },
+      });
+
+      // Set cookies
+      res.cookie('accessToken', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+      res.cookie('refreshToken', refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          createdAt: user.createdAt.toISOString(),
+        },
+        message: 'Login successful',
+      };
+    },
+
+    logout: async (_, __, { req, res }) => {
+      const refreshToken = req.cookies?.refreshToken;
+
+      if (refreshToken) {
+        // Delete refresh token from database
+        await prisma.refreshToken.deleteMany({
+          where: { token: refreshToken },
+        });
+      }
+
+      // Clear cookies
+      res.clearCookie('accessToken', { path: '/' });
+      res.clearCookie('refreshToken', { path: '/' });
+
+      return true;
+    },
+
+    refreshToken: async (_, __, { req, res }) => {
+      const refreshToken = req.cookies?.refreshToken;
+
+      if (!refreshToken) {
+        throw new Error('No refresh token provided');
+      }
+
+      // Find refresh token in database
+      const storedToken = await prisma.refreshToken.findUnique({
+        where: { token: refreshToken },
+        include: { user: true },
+      });
+
+      if (!storedToken) {
+        throw new Error('Invalid refresh token');
+      }
+
+      // Check if token is expired
+      if (new Date() > storedToken.expiresAt) {
+        await prisma.refreshToken.delete({
+          where: { id: storedToken.id },
+        });
+        throw new Error('Refresh token expired');
+      }
+
+      // Generate new access token
+      const accessToken = generateAccessToken(storedToken.user.id, storedToken.user.email);
+
+      // Set new access token cookie
+      res.cookie('accessToken', accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+
+      return true;
+    },
+
+    startGame: async (_, { region, mode }, { user }) => {
       const filtered = region ? images.filter(img => img.region === region) : images;
       
       if (!filtered.length) {
@@ -162,7 +332,8 @@ export const resolvers = {
           mode,
           currentRound: 1,
           totalScore: 0,
-          completed: false
+          completed: false,
+          userId: user?.userId || null,
         }
       });
 
@@ -226,10 +397,10 @@ export const resolvers = {
       return updatedSession;
     },
 
-    completeGame: async (_, { sessionId, username }) => {
+    completeGame: async (_, { sessionId, username }, { user }) => {
       const session = await prisma.gameSession.findUnique({
         where: { id: sessionId },
-        include: { rounds: true }
+        include: { rounds: true, user: true }
       });
 
       if (!session) {
@@ -241,11 +412,17 @@ export const resolvers = {
         data: { completed: true }
       });
 
-      if (username) {
+      // Use authenticated user's username if available, otherwise use provided username
+      const displayUsername = user 
+        ? (await prisma.user.findUnique({ where: { id: user.userId } }))?.username
+        : username;
+
+      if (displayUsername) {
         const entry = await prisma.leaderboardEntry.create({
           data: {
             sessionId,
-            username,
+            userId: user?.userId || null,
+            username: displayUsername,
             score: session.totalScore,
             region: session.region,
             mode: session.mode

@@ -1,7 +1,12 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000/graphql',
+  credentials: 'include', // Important: sends cookies with requests
+});
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000/', // your backend GraphQL server URL
+  link: httpLink,
   cache: new InMemoryCache(),
 });
 

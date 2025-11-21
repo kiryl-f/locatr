@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { useGameSessionStore } from '../../stores/gameSessionStore';
+import { useAuthStore } from '../../stores/authStore';
 import { COMPLETE_GAME } from '../../graphql/mutations/completeGame';
 import { GET_LEADERBOARD } from '../../graphql/queries/getLeaderboard';
 import { GET_PLAYER_STATS } from '../../graphql/queries/getPlayerStats';
@@ -10,6 +11,7 @@ import styles from './GameSummary.module.scss';
 export const GameSummary: React.FC = () => {
   const navigate = useNavigate();
   const { session, clearSession } = useGameSessionStore();
+  const { user, isAuthenticated } = useAuthStore();
   const [username, setUsername] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
@@ -32,13 +34,13 @@ export const GameSummary: React.FC = () => {
   }
 
   const handleSubmitScore = async () => {
-    if (!username.trim()) return;
+    if (!isAuthenticated && !username.trim()) return;
     
     try {
       await completeGame({
         variables: {
           sessionId: session.id,
-          username: username.trim()
+          username: isAuthenticated ? null : username.trim()
         },
         refetchQueries: ['GetLeaderboard', 'GetPlayerStats']
       });
@@ -110,18 +112,27 @@ export const GameSummary: React.FC = () => {
         {!submitted && (
           <div className={styles.usernameSection}>
             <h3>Save to Leaderboard</h3>
-            <div className={styles.usernameInput}>
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                maxLength={20}
-              />
-              <button onClick={handleSubmitScore} disabled={!username.trim()}>
-                Submit
-              </button>
-            </div>
+            {isAuthenticated ? (
+              <div className={styles.authenticatedSubmit}>
+                <p>Saving as: <strong>{user?.username}</strong></p>
+                <button onClick={handleSubmitScore} className={styles.submitButton}>
+                  Submit Score
+                </button>
+              </div>
+            ) : (
+              <div className={styles.usernameInput}>
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  maxLength={20}
+                />
+                <button onClick={handleSubmitScore} disabled={!username.trim()}>
+                  Submit
+                </button>
+              </div>
+            )}
           </div>
         )}
 
