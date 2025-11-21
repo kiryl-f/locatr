@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model GameSession {
+  id          String   @id @default(uuid())
+  region      String
+  mode        String
+  currentRound Int     @default(1)
+  totalScore  Int      @default(0)
+  completed   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  rounds      Round[]
+  leaderboardEntry LeaderboardEntry?
+
+  @@index([region, mode])
+  @@index([createdAt])
+}
+
+model Round {
+  id            String      @id @default(uuid())
+  sessionId     String
+  roundNumber   Int
+  imageId       String
+  actualLat     Float
+  actualLng     Float
+  guessLat      Float?
+  guessLng      Float?
+  distance      Float?
+  points        Int?
+  locationName  String?
+  createdAt     DateTime    @default(now())
+  session       GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, roundNumber])
+  @@index([sessionId])
+}
+
+model LeaderboardEntry {
+  id        String      @id @default(uuid())
+  sessionId String      @unique
+  username  String
+  score     Int
+  region    String
+  mode      String
+  createdAt DateTime    @default(now())
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([region, mode, score])
+  @@index([score])
+}
