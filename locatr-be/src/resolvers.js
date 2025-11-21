@@ -9,6 +9,7 @@ import {
   ACCESS_TOKEN_COOKIE_OPTIONS,
   REFRESH_TOKEN_COOKIE_OPTIONS,
 } from './auth/jwt.js';
+import { requireAuth } from './auth/requireAuth.js';
 
 const prisma = new PrismaClient();
 
@@ -168,6 +169,20 @@ export const resolvers = {
       });
 
       return entries;
+    },
+
+    // Protected: Get user's own games
+    myGames: async (_, { limit = 10 }, { user }) => {
+      requireAuth(user); // Backend protection
+
+      const games = await prisma.gameSession.findMany({
+        where: { userId: user.userId },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+        include: { rounds: true }
+      });
+
+      return games;
     }
   },
 

@@ -70,13 +70,17 @@ export const typeDefs = gql`
   }
 
   type Query {
+    # Public queries (no auth required)
     images(region: String, country: String, count: Int = 1): [Image!]!
     randomImage(region: String): Image
     locationNameByCoords(lat: Float!, lon: Float!): String
+    leaderboard(region: String, mode: String, limit: Int = 10): [LeaderboardEntry!]!
+    
+    # Protected queries (auth required)
+    me: User
     gameSession(id: ID!): GameSession
     playerStats: PlayerStats!
-    leaderboard(region: String, mode: String, limit: Int = 10): [LeaderboardEntry!]!
-    me: User
+    myGames(limit: Int = 10): [GameSession!]!
   }
 
   type Mutation {
